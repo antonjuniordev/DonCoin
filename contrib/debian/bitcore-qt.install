@@ -1,0 +1,6 @@
+usr/local/bin/doncoin-qt usr/bin
+share/pixmaps/doncoin32.xpm usr/share/pixmaps
+share/pixmaps/doncoin16.xpm usr/share/pixmaps
+share/pixmaps/doncoin128.png usr/share/pixmaps
+debian/doncoin-qt.desktop usr/share/applications
+debian/doncoin-qt.protocol usr/share/kde4/services/

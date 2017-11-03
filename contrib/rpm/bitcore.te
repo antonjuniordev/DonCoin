@@ -1,0 +1,81 @@
+policy_module(doncoin, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type doncoin_t;
+type doncoin_exec_t;
+init_daemon_domain(doncoin_t, doncoin_exec_t)
+
+permissive doncoin_t;
+
+type doncoin_initrc_exec_t;
+init_script_file(doncoin_initrc_exec_t)
+
+type doncoin_conf_t;
+files_type(doncoin_conf_t)
+
+type doncoin_var_lib_t;
+files_type(doncoin_var_lib_t)
+
+type doncoin_var_run_t;
+files_type(doncoin_var_run_t)
+
+type doncoin_port_t;
+corenet_port(doncoin_port_t)
+
+########################################
+#
+# doncoin local policy
+#
+allow doncoin_t self:process { fork };
+
+allow doncoin_t self:fifo_file rw_fifo_file_perms;
+allow doncoin_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(doncoin_t, doncoin_conf_t, doncoin_conf_t)
+manage_files_pattern(doncoin_t, doncoin_conf_t, doncoin_conf_t)
+
+manage_dirs_pattern(doncoin_t, doncoin_var_lib_t, doncoin_var_lib_t)
+manage_files_pattern(doncoin_t, doncoin_var_lib_t, doncoin_var_lib_t)
+files_var_lib_filetrans(doncoin_t, doncoin_var_lib_t, { dir file })
+
+manage_dirs_pattern(doncoin_t, doncoin_var_run_t, doncoin_var_run_t)
+manage_files_pattern(doncoin_t, doncoin_var_run_t, doncoin_var_run_t)
+
+sysnet_dns_name_resolve(doncoin_t)
+corenet_all_recvfrom_unlabeled(doncoin_t)
+
+allow doncoin_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(doncoin_t)
+corenet_tcp_sendrecv_generic_node(doncoin_t)
+corenet_tcp_sendrecv_all_ports(doncoin_t)
+corenet_tcp_bind_generic_node(doncoin_t)
+
+gen_require(`
+    type doncoin_port_t;
+')
+allow doncoin_t doncoin_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type doncoin_port_t;
+')
+allow doncoin_t doncoin_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(doncoin_t)
+
+files_read_etc_files(doncoin_t)
+
+miscfiles_read_localization(doncoin_t)
+
+sysnet_dns_name_resolve(doncoin_t)
+
+allow doncoin_t doncoin_exec_t:file execute_no_trans;
+allow doncoin_t self:process setsched;
+corecmd_exec_ls(doncoin_t)
+corenet_tcp_connect_http_port(doncoin_t)
+dev_read_urand(doncoin_t)
+fs_getattr_xattr_fs(doncoin_t)
+kernel_read_system_state(doncoin_t)

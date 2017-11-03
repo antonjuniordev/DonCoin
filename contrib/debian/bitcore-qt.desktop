@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=DonCoin Core
+Comment=Connect to the DonCoin P2P Network
+Comment[de]=Verbinde mit dem DonCoin peer-to-peer Netzwerk
+Comment[fr]=DonCoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=DonCoin, eşten eşe kriptografik sanal para birimi
+Exec=doncoin-qt %u
+Terminal=false
+Type=Application
+Icon=doncoin128
+MimeType=x-scheme-handler/doncoin;
+Categories=Office;Finance;

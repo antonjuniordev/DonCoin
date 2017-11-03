@@ -1,0 +1,22 @@
+[Unit]
+Description=DonCoin's distributed currency daemon
+After=network.target
+
+[Service]
+User=doncoin
+Group=doncoin
+
+Type=forking
+PIDFile=/var/lib/doncoind/doncoind.pid
+ExecStart=/usr/bin/doncoind -daemon -pid=/var/lib/doncoind/doncoind.pid \
+-conf=/etc/doncoin/doncoin.conf -datadir=/var/lib/doncoind -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

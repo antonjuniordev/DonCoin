@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/doncoin/.doncoin" ]; then
+	DONCOIND_DEFAULT_DATADIR="/var/lib/doncoin/.doncoin"
+else
+	DONCOIND_DEFAULT_DATADIR="/var/lib/doncoind"
+fi
+
+DONCOIND_CONFIGFILE=${DONCOIND_CONFIGFILE:-/etc/doncoin/doncoin.conf}
+DONCOIND_PIDDIR=${DONCOIND_PIDDIR:-/var/run/doncoind}
+DONCOIND_PIDFILE=${DONCOIND_PIDFILE:-${DONCOIND_PIDDIR}/doncoind.pid}
+DONCOIND_DATADIR=${DONCOIND_DATADIR:-${DONCOIND_DEFAULT_DATADIR}}
+DONCOIND_USER=${DONCOIND_USER:-${DONCOIN_USER:-doncoin}}
+DONCOIND_GROUP=${DONCOIND_GROUP:-doncoin}
+DONCOIND_BIN=${DONCOIND_BIN:-/usr/bin/doncoind}
+DONCOIND_NICE=${DONCOIND_NICE:-${NICELEVEL:-0}}
+DONCOIND_OPTS="${DONCOIND_OPTS:-${DONCOIN_OPTS}}"
+
+name="DonCoin Core Daemon"
+description="DonCoin cryptocurrency P2P network daemon"
+
+command="/usr/bin/doncoind"
+command_args="-pid=\"${DONCOIND_PIDFILE}\" \
+		-conf=\"${DONCOIND_CONFIGFILE}\" \
+		-datadir=\"${DONCOIND_DATADIR}\" \
+		-daemon \
+		${DONCOIND_OPTS}"
+
+required_files="${DONCOIND_CONFIGFILE}"
+start_stop_daemon_args="-u ${DONCOIND_USER} \
+			-N ${DONCOIND_NICE} -w 2000"
+pidfile="${DONCOIND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${DONCOIND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${DONCOIND_USER}:${DONCOIND_GROUP}" \
+	"${DONCOIND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${DONCOIND_USER}:${DONCOIND_GROUP}" \
+	"${DONCOIND_PIDDIR}"
+
+	checkpath -f \
+	-o ${DONCOIND_USER}:${DONCOIND_GROUP} \
+	-m 0660 \
+	${DONCOIND_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${DONCOIND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run doncoind."
+		eerror "The setting must appear in ${DONCOIND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"DonCoin Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

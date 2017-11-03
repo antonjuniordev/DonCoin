@@ -1,0 +1,8 @@
+/usr/bin/doncoin-cli		--	gen_context(system_u:object_r:doncoin_exec_t,s0)
+/usr/sbin/doncoind		--	gen_context(system_u:object_r:doncoin_exec_t,s0)
+/usr/lib(64)?/doncoin/doncoind		--	gen_context(system_u:object_r:doncoin_exec_t,s0)
+
+/etc/doncoin(/.*)?		gen_context(system_u:object_r:doncoin_conf_t,s0)
+/var/lib/doncoin(/.*)?		gen_context(system_u:object_r:doncoin_var_lib_t,s0)
+
+(/var)?/run/doncoind(/.*)?   gen_context(system_u:object_r:doncoin_var_run_t,s0)

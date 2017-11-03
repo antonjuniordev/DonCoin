@@ -1,0 +1,33 @@
+# /etc/conf.d/doncoind: config file for /etc/init.d/doncoind
+
+# Config file location
+#DONCOIND_CONFIGFILE="/etc/doncoin/doncoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $DONCOIND_USER)
+#DONCOIND_PIDDIR="/var/run/doncoind"
+
+# What filename to give the pidfile
+#DONCOIND_PIDFILE="${DONCOIND_PIDDIR}/doncoind.pid"
+
+# Where to write doncoind data (be mindful that the blockchain is large)
+#DONCOIND_DATADIR="/var/lib/doncoind"
+
+# User and group to own doncoind process
+#DONCOIND_USER="doncoin"
+#DONCOIND_GROUP="doncoin"
+
+# Path to doncoind executable
+#DONCOIND_BIN="/usr/bin/doncoind"
+
+# Nice value to run doncoind under
+#DONCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+DONCOIND_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for doncoind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+DONCOIND_SIGTERM_TIMEOUT=60

@@ -1,0 +1,7 @@
+[main]
+host = https://www.transifex.com
+
+[doncoin.qt-translation-014x]
+file_filter = src/qt/locale/doncoin_<lang>.ts
+source_file = src/qt/locale/doncoin_en.ts
+source_lang = en
